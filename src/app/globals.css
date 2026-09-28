@@ -1,0 +1,49 @@
+:root {
+  color-scheme: light;
+  --ink: #24372f;
+  --muted: #78867f;
+  --green: #244b3d;
+  --green-deep: #1e3c31;
+  --coral: #d8735c;
+  --paper: #ffffff;
+  --canvas: #f2f5f1;
+  --line: #e5ebe6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  color: #fff;
+  background: var(--green);
+}
