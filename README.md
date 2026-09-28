@@ -1,4 +1,4 @@
-# Syntecxhub NotesApp
+# Syntecxhub_NotesApp
 
 A simple notes app built with Next.js. Create, edit, search, and delete notes; notes are saved in your browser's local storage.
 
