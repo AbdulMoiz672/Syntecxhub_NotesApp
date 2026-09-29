@@ -56,6 +56,8 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
   const [authError, setAuthError] = useState("");
   const [isAuthBusy, setIsAuthBusy] = useState(false);
@@ -291,12 +293,16 @@ export default function Home() {
   async function submitAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setAuthError("");
+    if (authMode === "register" && password !== confirmPassword) {
+      setAuthError("Passwords do not match.");
+      return;
+    }
     setIsAuthBusy(true);
     try {
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, mode: authMode }),
+        body: JSON.stringify({ email, password, confirmPassword, mode: authMode }),
       });
       const result = await response.json() as { email?: string; error?: string };
       if (!response.ok || !result.email) throw new Error(result.error || "Unable to sign in.");
@@ -308,6 +314,8 @@ export default function Home() {
       setIsCloudReady(true);
       setSyncStatus("synced");
       setPassword("");
+      setConfirmPassword("");
+      setIsPasswordVisible(false);
       setIsAccountDialogOpen(false);
     } catch (error) {
       setAuthError(error instanceof Error ? error.message : "Unable to connect to MongoDB sync.");
@@ -321,6 +329,14 @@ export default function Home() {
     setAccountEmail(null);
     setIsCloudReady(false);
     setSyncStatus("local");
+  }
+
+  function closeAccountDialog() {
+    setIsAccountDialogOpen(false);
+    setPassword("");
+    setConfirmPassword("");
+    setIsPasswordVisible(false);
+    setAuthError("");
   }
 
   function formatDate(date: string) {
@@ -464,11 +480,36 @@ export default function Home() {
         </section>
       </div>}
 
-      {isAccountDialogOpen && <div className={styles.modalBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setIsAccountDialogOpen(false); }}>
+      {isAccountDialogOpen && <div className={styles.modalBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) closeAccountDialog(); }}>
         <section className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="account-dialog-title">
-          <div className={styles.modalHeader}><div><p className={styles.eyebrow}>MONGODB CLOUD SYNC</p><h2 id="account-dialog-title">{authMode === "login" ? "Sign in to sync" : "Create your account"}</h2></div><button className={styles.modalClose} type="button" aria-label="Close" onClick={() => setIsAccountDialogOpen(false)}>x</button></div>
-          <div className={styles.authModes}><button type="button" className={authMode === "login" ? styles.authModeActive : ""} onClick={() => { setAuthMode("login"); setAuthError(""); }}>Sign in</button><button type="button" className={authMode === "register" ? styles.authModeActive : ""} onClick={() => { setAuthMode("register"); setAuthError(""); }}>Create account</button></div>
-          <form onSubmit={submitAuth}><label className={styles.modalField}><span>Email</span><input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></label><label className={styles.modalField}><span>Password</span><input type="password" autoComplete={authMode === "login" ? "current-password" : "new-password"} value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} maxLength={72} required /></label>{authError && <p className={styles.formError} role="alert">{authError}</p>}<div className={styles.modalFooter}><span className={styles.saveHint}>Your password is stored as a secure hash.</span><button className={styles.saveButton} type="submit" disabled={isAuthBusy}>{isAuthBusy ? "Connecting..." : authMode === "login" ? "Sign in" : "Create account"}</button></div></form>
+          <div className={styles.modalHeader}><div><p className={styles.eyebrow}>MONGODB CLOUD SYNC</p><h2 id="account-dialog-title">{authMode === "login" ? "Sign in to sync" : "Create your account"}</h2></div><button className={styles.modalClose} type="button" aria-label="Close" onClick={closeAccountDialog}>x</button></div>
+          <div className={styles.authModes}>
+            <button type="button" className={authMode === "login" ? styles.authModeActive : ""} onClick={() => { setAuthMode("login"); setAuthError(""); setConfirmPassword(""); }}>Sign in</button>
+            <button type="button" className={authMode === "register" ? styles.authModeActive : ""} onClick={() => { setAuthMode("register"); setAuthError(""); }}>Create account</button>
+          </div>
+          <form onSubmit={submitAuth}>
+            <label className={styles.modalField}>
+              <span>Email</span>
+              <input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+            </label>
+            <div className={styles.modalField}>
+              <label htmlFor="account-password">Password</label>
+              <span className={styles.passwordControl}>
+                <input id="account-password" type={isPasswordVisible ? "text" : "password"} autoComplete={authMode === "login" ? "current-password" : "new-password"} aria-describedby={authMode === "register" ? "password-hint" : undefined} value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} maxLength={72} required />
+                <button className={styles.passwordToggle} type="button" aria-label={isPasswordVisible ? "Hide password" : "Show password"} aria-pressed={isPasswordVisible} onClick={() => setIsPasswordVisible((visible) => !visible)}>{isPasswordVisible ? "Hide" : "Show"}</button>
+              </span>
+              {authMode === "register" && <span id="password-hint" className={styles.passwordHint}>Use at least 8 characters. Maximum 72 UTF-8 bytes.</span>}
+            </div>
+            {authMode === "register" && <label className={styles.modalField}>
+              <span>Confirm password</span>
+              <input type={isPasswordVisible ? "text" : "password"} autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} minLength={8} maxLength={72} required />
+            </label>}
+            {authError && <p className={styles.formError} role="alert">{authError}</p>}
+            <div className={styles.modalFooter}>
+              <span className={styles.saveHint}>Your password is stored as a secure hash.</span>
+              <button className={styles.saveButton} type="submit" disabled={isAuthBusy}>{isAuthBusy ? "Connecting..." : authMode === "login" ? "Sign in" : "Create account"}</button>
+            </div>
+          </form>
         </section>
       </div>}
     </div>

@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as { email?: unknown; password?: unknown; mode?: unknown };
+    const body = await request.json() as { email?: unknown; password?: unknown; confirmPassword?: unknown; mode?: unknown };
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const password = typeof body.password === "string" ? body.password : "";
     const mode = body.mode;
@@ -41,6 +41,9 @@ export async function POST(request: Request) {
     }
     if (mode !== "register" && mode !== "login") {
       return Response.json({ error: "Choose sign in or create account." }, { status: 400 });
+    }
+    if (mode === "register" && body.confirmPassword !== password) {
+      return Response.json({ error: "Passwords do not match." }, { status: 400 });
     }
 
     const db = await getDatabase();
