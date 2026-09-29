@@ -1,13 +1,13 @@
 :root {
-  color-scheme: light;
-  --ink: #24372f;
-  --muted: #78867f;
-  --green: #244b3d;
-  --green-deep: #1e3c31;
-  --coral: #d8735c;
-  --paper: #ffffff;
-  --canvas: #f2f5f1;
-  --line: #e5ebe6;
+  color-scheme: dark;
+  --ink: #e8edf5;
+  --muted: #98a4b5;
+  --green: #3478f6;
+  --green-deep: #0b0e14;
+  --coral: #4f8bff;
+  --paper: #111721;
+  --canvas: #090c12;
+  --line: #252d3a;
 }
 
 * {
@@ -45,5 +45,5 @@ a {
 
 ::selection {
   color: #fff;
-  background: var(--green);
+  background: #2868d9;
 }
