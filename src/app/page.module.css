@@ -242,7 +242,7 @@
 .noteItemDot { width: 5px; height: 5px; border-radius: 50%; background: #6d9fff; opacity: 0; }
 .noteListItemActive .noteItemDot { opacity: 1; }
 .noteItemTitle { overflow: hidden; color: #e5ebf5; font-family: Georgia, "Times New Roman", serif; font-size: 17px; text-overflow: ellipsis; white-space: nowrap; }
-.noteItemPreview { display: -webkit-box; overflow: hidden; color: #9aa7ba; font-size: 11px; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.noteItemPreview { display: -webkit-box; overflow: hidden; color: #9aa7ba; font-size: 11px; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
 
 .listEmpty { padding: 26px 19px; color: #9aa7ba; font-size: 12px; }
 .emptyDash { display: block; margin-bottom: 10px; color: #6d9fff; font-size: 21px; }
